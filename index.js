@@ -25,6 +25,7 @@ class Sprit {
         }
         this.color = color;
         this.isAttacking;
+        this.health = 100
 
     }
 
@@ -134,6 +135,38 @@ function collision({rectangle1, rectangle2}){
     )
 }
 
+function determineWinner({player, enemy, timerId}) {
+    clearTimeout(timerId)
+    document.querySelector('#displayText').style.display = 'flex';
+    if(player.health === enemy.health){
+        document.querySelector('#displayText').innerHTML = 'Tie';
+    } else if(player.health > enemy.health){
+        document.querySelector('#displayText').innerHTML = 'Player 1 Wins';
+    } else if(player.health < enemy.health){
+        document.querySelector('#displayText').innerHTML = 'Player 2 Wins';
+    }
+}
+
+let timer = 60
+let timerId
+function decreaseTimer(){
+    if(timer > 0) { 
+        timerId = setTimeout(decreaseTimer, 1000)
+        timer--
+        document.querySelector('#timer').innerHTML = timer
+    }
+
+    if(timer === 0){
+        determineWinner({player, enemy, timerId})
+    }
+
+    if (player.health === enemy.health){
+        console.log('tie')
+    }
+}
+
+decreaseTimer();
+
 let lastKey;
 
 function animate(){
@@ -171,7 +204,8 @@ function animate(){
         player.isAttacking
     ){
         player.isAttacking = false;
-        document.querySelector('#enemyHealth').style.width = '50%';
+        enemy.health -= 20;
+        document.querySelector('#enemyHealth').style.width = enemy.health + '%';
         console.log(' player attack');
     }
 
@@ -184,6 +218,14 @@ function animate(){
     ){
         enemy.isAttacking = false;
         console.log(' enemy attack');
+        player.health -= 20;
+        document.querySelector('#playerHealth').style.width = player.health + '%';
+        
+    }
+
+    // end game state
+    if(enemy.health <= 0 || player.health <= 0) {
+        determineWinner({player, enemy, timerId})
     }
 }
 
