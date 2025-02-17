@@ -7,71 +7,25 @@ canvas.height = 576;
 c.fillRect(0, 0, canvas.width, canvas.height);
 const gravity = 0.2;
 
-class Sprit {
-    constructor({position, velocity, color = 'red', offset}){                   // constructor - function within the class
-        this.position = position;
-        this.velocity = velocity;
-        this.width = 50;
-        this.height = 150;
-        this.lastKey;
-        this.attackBox = {
-            position: {
-                x : this.position.x,
-                y : this.position.y
-            },
-            offset,
-            width: 100,
-            height: 50
-        }
-        this.color = color;
-        this.isAttacking;
-        this.health = 100
 
-    }
+const background = new Sprit({
+    position:{
+        x: 0,
+        y: 0
+    },
+    imageSrc: './images/background.png'
+})
 
-    draw(){
-        c.fillStyle = this.color;  // giving our rectangle a color 
-        c.fillRect(this.position.x, this.position.y, this.width, this.height) // at x and y cordinate and 50px wide and 150px tall
+const shop = new Sprit({
+    position:{
+        x: 600,
+        y: 128
+    },
+    imageSrc: './images/shop.png',
+    scale : 2.75
+})
 
-        //attack box while attacking
-        if(this.isAttacking){
-            c.fillStyle = 'green';
-            c.fillRect(
-                this.attackBox.position.x,
-                this.attackBox.position.y,
-                this.attackBox.width,
-                this.attackBox.height
-            )
-        }
-    }
-
-    update(){
-        this.draw();
-        this.attackBox.position.x = this.position.x + this.attackBox.offset.x;
-        this.attackBox.position.y = this.position.y; 
-
-        this.position.x += this.velocity.x;
-        this.position.y += this.velocity.y;
-
-
-        if(this.position.y + this.height + this.velocity.y >= canvas.height){
-            this.velocity.y = 0; // as we go down the height increase, so when is bigger than canvas' we stop
-            
-        }
-        else{
-            this.velocity.y += gravity;
-        }
-    }
-
-    attack(){
-        this.isAttacking = true;
-        setTimeout(()=>{
-            this.isAttacking = false;
-        }, 100)
-    }
-}
-
-const player = new Sprit({
+const player = new Fighter({
     position: {
         x: 0,
         y: 0
@@ -88,7 +42,7 @@ const player = new Sprit({
 });
 
 
-const enemy = new Sprit({
+const enemy = new Fighter({
     position: {
         x: 400,
         y: 100
@@ -102,12 +56,9 @@ const enemy = new Sprit({
         x:-50,
         y:0 
     }
-        
-    
 });
 
 console.log(enemy);
-
 
 const keys = {
     a: {
@@ -122,48 +73,9 @@ const keys = {
     ArrowRight:{
         pressed: false
     }
-   
 
 }
 
-function collision({rectangle1, rectangle2}){
-    return (
-        rectangle1.attackBox.position.x + rectangle1.attackBox.width >= rectangle2.position.x && 
-        rectangle1.attackBox.position.x <= rectangle2.position.x + rectangle2.width &&
-        rectangle1.attackBox.position.y + rectangle1.attackBox.height >= rectangle2.position.y &&
-        rectangle1.attackBox.position.y <= rectangle2.position.y + rectangle2.height 
-    )
-}
-
-function determineWinner({player, enemy, timerId}) {
-    clearTimeout(timerId)
-    document.querySelector('#displayText').style.display = 'flex';
-    if(player.health === enemy.health){
-        document.querySelector('#displayText').innerHTML = 'Tie';
-    } else if(player.health > enemy.health){
-        document.querySelector('#displayText').innerHTML = 'Player 1 Wins';
-    } else if(player.health < enemy.health){
-        document.querySelector('#displayText').innerHTML = 'Player 2 Wins';
-    }
-}
-
-let timer = 60
-let timerId
-function decreaseTimer(){
-    if(timer > 0) { 
-        timerId = setTimeout(decreaseTimer, 1000)
-        timer--
-        document.querySelector('#timer').innerHTML = timer
-    }
-
-    if(timer === 0){
-        determineWinner({player, enemy, timerId})
-    }
-
-    if (player.health === enemy.health){
-        console.log('tie')
-    }
-}
 
 decreaseTimer();
 
@@ -173,6 +85,8 @@ function animate(){
     window.requestAnimationFrame(animate) // recursion
     c.fillStyle = 'black';
     c.fillRect(0, 0, canvas.width, canvas.height);
+    background.update();
+    shop.update();
     player.update();
     enemy.update();
 
