@@ -1,5 +1,5 @@
 class Sprit{
-    constructor({position, imageSrc, scale = 1, framesMax = 1}){
+    constructor({position, imageSrc, scale = 1, framesMax = 1, offset = {x: 0, y: 0}}){
         this.position = position
         this.width = 50
         this.height = 150
@@ -10,6 +10,7 @@ class Sprit{
         this.framesCurrent = 0
         this.framesElapsed = 0
         this.framesHold = 12 // animation is super fast so we need it to perform at every 10th frame
+        this.offset = offset
     }
 
     draw(){
@@ -19,15 +20,15 @@ class Sprit{
             0,
             this.image.width/this.framesMax,
             this.image.height,
-            this.position.x, 
-            this.position.y, 
+            this.position.x - this.offset.x, 
+            this.position.y - this.offset.y,
             (this.image.width/this.framesMax) * this.scale, 
             this.image.height * this.scale
         )
 
     }
-    update(){
-        this.draw()
+
+    animateFrames(){
         this.framesElapsed++
 
         if(this.framesElapsed % this.framesHold === 0){
@@ -38,16 +39,36 @@ class Sprit{
                 this.framesCurrent = 0;
             }
         }
+    }
+    update(){
+        this.draw()
+        this.animateFrames()
         
     }
 }
 
-class Fighter {
-    constructor({position, velocity, color = 'red', offset}){                   // constructor - function within the class
-        this.position = position;
-        this.velocity = velocity;
-        this.width = 50;
-        this.height = 150;
+class Fighter extends Sprit{
+    constructor({
+        position, 
+        velocity, 
+        color = 'red',  
+        imageSrc, 
+        scale = 1, 
+        framesMax = 1,
+        offset = {x: 0, y: 0}
+    }){                   // constructor - function within the class
+        super({
+            position,
+            imageSrc,
+            scale,
+            framesMax,
+            offset
+            
+        })
+
+        this.velocity = velocity
+        this.width = 50
+        this.height = 150
         this.lastKey;
         this.attackBox = {
             position: {
@@ -58,30 +79,21 @@ class Fighter {
             width: 100,
             height: 50
         }
-        this.color = color;
-        this.isAttacking;
+        this.color = color
+        this.isAttacking
         this.health = 100
+        this.framesCurrent = 0
+        this.framesElapsed = 0
+        this.framesHold = 12 
 
     }
 
-    draw(){
-        c.fillStyle = this.color;  // giving our rectangle a color 
-        c.fillRect(this.position.x, this.position.y, this.width, this.height) // at x and y cordinate and 50px wide and 150px tall
-
-        //attack box while attacking
-        if(this.isAttacking){
-            c.fillStyle = 'green';
-            c.fillRect(
-                this.attackBox.position.x,
-                this.attackBox.position.y,
-                this.attackBox.width,
-                this.attackBox.height
-            )
-        }
-    }
+    
 
     update(){
         this.draw();
+        this.animateFrames()
+        
         this.attackBox.position.x = this.position.x + this.attackBox.offset.x;
         this.attackBox.position.y = this.position.y; 
 

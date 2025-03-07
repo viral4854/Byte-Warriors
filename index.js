@@ -38,6 +38,13 @@ const player = new Fighter({
     offset:{
         x:0,
         y:0 
+    },
+    imageSrc: './images/samuraiMack/idle.png',
+    framesMax : 8,
+    scale : 2.5,
+    offset: {
+        x: 215,
+        y: 157
     }
    
 });
@@ -89,7 +96,7 @@ function animate(){
     background.update();
     shop.update();
     player.update();
-    enemy.update();
+    //enemy.update();
 
     //default velocity if no key is pressed
     //player movement
