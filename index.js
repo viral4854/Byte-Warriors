@@ -45,6 +45,22 @@ const player = new Fighter({
     offset: {
         x: 215,
         y: 157
+    },
+    sprites: {
+        idle: {
+            imageSrc: './images/samuraiMack/idle.png',
+            framesMax: 8,
+        },
+        run : {
+            imageSrc: './images/samuraiMack/run.png',
+            framesMax: 8,
+        },
+        jump : {
+            imageSrc: './images/samuraiMack/jump.png',
+            framesMax: 2,
+        }
+        
+        
     }
    
 });
@@ -101,11 +117,18 @@ function animate(){
     //default velocity if no key is pressed
     //player movement
     player.velocity.x = 0;
+    player.switchSprite('idle')
     if(keys.a.pressed &&  player.lastKey === 'a'){
-        player.velocity.x = -5;
+        player.velocity.x = -5
+        player.switchSprite('run')
     }
     else if(keys.d.pressed &&  player.lastKey === 'd'){
-        player.velocity.x = 5;
+        player.velocity.x = 5
+        player.switchSprite('run')
+    }
+
+    if(player.velocity.y < 0){
+        player.switchSprite('jump')
     }
     
     //enemy movement
