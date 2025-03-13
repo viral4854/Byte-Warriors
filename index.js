@@ -66,6 +66,10 @@ const player = new Fighter({
         attack1 : {
             imageSrc: './images/samuraiMack/Attack1.png',
             framesMax: 6,
+        },
+        takeHit : {
+            imageSrc: './images/samuraiMack/Take Hit - white silhouette.png',
+            framesMax: 4,
         }  
     },
     attackBox: {
@@ -120,11 +124,15 @@ const enemy = new Fighter({
         attack1 : {
             imageSrc: './images/kenji/Attack1.png',
             framesMax: 4,
-        }  
+        },
+        takeHit : {
+            imageSrc: './images/kenji/Take Hit.png',
+            framesMax: 3,
+        }
     },
     attackBox: {
         offset:{
-            x: 100,
+            x: -160,
             y: 50
         },
         width : 160,
@@ -208,16 +216,16 @@ function animate(){
         enemy.switchSprite('fall')
     }
 
-    // detect for the collision
+    // detect for the collision & enemy take hit
     if(
         collision({
             rectangle1 : player,
             rectangle2 : enemy
         }) &&
         player.isAttacking && player.framesCurrent === 4
-    ){
+    ){  
+        enemy.takeHit()
         player.isAttacking = false;
-        enemy.health -= 20;
         document.querySelector('#enemyHealth').style.width = enemy.health + '%';
         //console.log(' player attack');
     }
@@ -227,18 +235,25 @@ function animate(){
         player.isAttacking = false
     }
 
+    // player gets hit
+
     if(
         collision({
             rectangle1 : enemy,
             rectangle2 : player
         }) &&
-        enemy.isAttacking
+        enemy.isAttacking && enemy.framesCurrent == 2
     ){
+        player.takeHit()
         enemy.isAttacking = false;
-        console.log(' enemy attack');
-        player.health -= 20;
+        //console.log(' enemy attack');
+        
         document.querySelector('#playerHealth').style.width = player.health + '%';
         
+    }
+    // if enemy misses
+    if(enemy.isAttacking && enemy.framesCurrent === 2){
+        enemy.isAttacking = false
     }
 
     // end game state
